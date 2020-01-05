@@ -1,0 +1,39 @@
+# For node-sonos-http-api folder
+node-sonos-http-api/node_modules
+node-sonos-http-api/presets.json
+node-sonos-http-api/presets/
+node-sonos-http-api/cache
+node-sonos-http-api/settings.json
+node-sonos-http-api/static/tts
+node-sonos-http-api/.idea
+node-sonos-http-api/.ntvs_analysis.dat
+node-sonos-http-api/obj/
+node-sonos-http-api/*.njsproj
+node-sonos-http-api/*.sln
+node-sonos-http-api/*.pem
+node-sonos-http-api/*.crt
+node-sonos-http-api/*.pfx
+node-sonos-http-api/*.key
+
+# VS
+.vscode
+.vscode/launch.json
+
+# Ignore Mac DS_Store files
+.DS_Store
+yarn.lock
+npm-debug.log
+
+
+
+
+# For python-sonos-nfc folder
+python-sonos-nfc/tmp/
+python-sonos-nfc/settings.ini
+python-sonos-nfc/*.log
+
+
+
+# For sonos-nfc-cards folder
+sonos-nfc-cards/images
+sonos-nfc-cards/client_secret.json
