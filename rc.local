@@ -1,0 +1,29 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Start Sonos HTTP API
+su pi -c 'node /home/pi/SonosProject/node-sonos-http-api/server.js < /dev/null &'
+
+# Start NFC Reader
+su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-read.py -sonosUri http://localhost:5005 -sonosRoom Kitchen > /home/pi/SonosProject/python-sonos-nfc/log.txt &'
+
+# Restart Each Night at 3 AM
+su pi -c 'shutdown -r 03:00'
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+exit 0
