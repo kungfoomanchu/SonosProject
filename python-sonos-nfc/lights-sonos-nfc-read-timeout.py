@@ -32,6 +32,7 @@ def end_read(signal,frame):
     print("Ctrl+C captured, ending read.")
     continue_reading = False
     GPIO.cleanup()
+    print("GPIO Cleaned")
 # Hook the SIGINT
 signal.signal(signal.SIGINT, end_read)
 
