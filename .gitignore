@@ -24,18 +24,16 @@ node-sonos-http-api/*.key
 yarn.lock
 npm-debug.log
 
-
-
-
 # For python-sonos-nfc folder
 python-sonos-nfc/tmp/
 python-sonos-nfc/settings.ini
 python-sonos-nfc/*.log
 python-sonos-nfc/log.txt
-python-sonos-nfc/__pycache__
-
-
 
 # For sonos-nfc-cards folder
 sonos-nfc-cards/images
 sonos-nfc-cards/client_secret.json
+
+# Pycache
+*__pycache__
+*.pyc
