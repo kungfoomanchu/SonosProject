@@ -13,6 +13,9 @@ import configparser
 # import RPi.GPIO as GPIO
 # import time
 # # End Added for LEDs
+# For BlinkStick
+from blinkstick import blinkstick
+#
 
 SONOS_BASE_URI = ""
 SONOS_ROOM = ""
@@ -52,6 +55,14 @@ def executeSonosCommand(sonosUri):
         # time.sleep(5)
         # GPIO.output(12, GPIO.LOW)
         # # End Turn On Pin 12 for x Seconds
+
+        # # For BlinkStick
+        # led = blinkstick.find_first():
+        # led.set_color(name="green")
+        # led.pulse(name="blue")
+        # time.sleep(3)
+        # bstick.turn_off()
+        # # End BlinkStick
     else:
         print("Sonos Node Server Error")
         # # Turn On Pin 31 for x Seconds
@@ -60,6 +71,13 @@ def executeSonosCommand(sonosUri):
         # time.sleep(5)
         # GPIO.output(31, GPIO.LOW)
         # # End Turn On Pin 31 for x Seconds
+
+        # # For BlinkStick
+        # led = blinkstick.find_first():
+        # led.set_color(name="red")
+        # time.sleep(3)
+        # bstick.turn_off()
+        # # End BlinkStick
 
     if(response.status_code == 200):
         return True

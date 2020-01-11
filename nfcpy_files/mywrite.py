@@ -19,7 +19,7 @@ from nfc.clf import RemoteTarget
 
 continue_reading = True
 is_test = False
-nfcData = "" 
+nfcData_to_write = "" 
 
 # Capture SIGINT for cleanup when the script is aborted
 def end_read(signal,frame):
@@ -47,11 +47,11 @@ args = parser.parse_args()
 
 # Import variaables from args
 is_test = args.test
-nfcData= args.uri
+nfcData_to_write= args.uri
 
-# if(not nfcData):
-#     nfcData = input("Enter URI to write: ")
-nfcData = "spotify:album:65zhpgwMMRxncpa7zHckQ6"
+# if(not nfcData_to_write):
+#     nfcData_to_write = input("Enter URI to write: ")
+nfcData_to_write = "spotify:album:65zhpgwMMRxncpa7zHckQ6"
 
 # TODO add notification for URI to be written
 
@@ -66,7 +66,7 @@ if(not is_test):
 
     # Copy URI to the Tag
     # How to write URI via ndeflib documentation https://ndeflib.readthedocs.io/en/stable/records/uri.html
-    tag.ndef.records = [ndef.UriRecord(nfcData)]
+    tag.ndef.records = [ndef.UriRecord(nfcData_to_write)]
     print("URI Successfully Written")
     # Finally the contactless frontend should be closed.
     clf.close()
