@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-#    Copyright 
+#    Copyright
 #
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with sonos-nfc-read.  If not, see <http://www.gnu.org/licenses/>.
@@ -26,7 +26,7 @@ continue_reading = True
 is_test = False
 DEFAULT_DEBOUNCE = 10
 DEFAULT_CARD_TIMEOUT = 0
-nfcData_to_write = "" 
+nfcData_to_write = ""
 #
 
 ## Capture SIGINT for cleanup when the script is aborted
@@ -43,6 +43,7 @@ signal.signal(signal.SIGINT, end_read)
 # Establish Reader on USB
 # See list of compatible readers at nfcpy.org
 clf = nfc.ContactlessFrontend('usb')
+#
 
 # Setup Parser
 parser = argparse.ArgumentParser(description='Write NFC tags for sonos.')
@@ -72,6 +73,8 @@ debounce = timedelta(seconds = args.debounce)
 card_timeout = timedelta(seconds = args.cardTimeout)
 #
 
+# If/else for reading, writing, writing in loop
+# TODO: add write loop
 if we_write == "no":
 
     print("Add NFC Tag ...")
@@ -85,14 +88,15 @@ if we_write == "no":
         # Debounce card reader
         if last_time + debounce > now:
             continue
-        
+
         # Establish the types of tags we are looking for
         target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-        print(target) 
+        print(target)
         #
 
         # If we don't find a card, wait
         # TODO figure out how to make this not annoying
+        # TODO figure out what to do if the card isn't compatible
         if target is None:
             sleep(1)  # don't burn the CPU
             continue
@@ -104,13 +108,17 @@ if we_write == "no":
 
         # This is the generally preferred way to discover and activate contactless targets of any supported type
         tag = clf.connect(rdwr={'on-connect': lambda tag: False})
-        print(tag)  
+        print(tag)
+        #
 
         # Read NDEF Records
         if not tag.ndef:
             print("No NDEF records found!")
+            print("You have 60 seconds to remove card")
+            sleep(60)
+            # TODO: clf.close() breaks it here for some reason
             # Finally the contactless frontend should be closed.
-            clf.close()
+            #clf.close()
         else:
             print(ndef.UriRecord)
             # print(tag.ndef.records.uri)
@@ -122,9 +130,11 @@ if we_write == "no":
                 nfc_uri = record.uri
             # 
 
+            # CardTimeout Code
             # If the nfc data is the same as previous, then ignore while we are in the timeout
             # Otherwise send the command.
             # TODO: filter out play,pause,next,previous etc from the timeout
+            # TODO: ctrl+c isn't working if cardTimeout is prompted
             if last_nfc_uri == nfc_uri and last_time + card_timeout > now:
                 print("Re-reading the same card too soon, ignoring")
             else:
@@ -134,6 +144,7 @@ if we_write == "no":
                 # send command to server
                 if(not is_test):
                     SonosController.play(nfc_uri)
+                #
 
 else:
     # Establish the types of tags we are looking for
@@ -148,7 +159,7 @@ else:
     if target is None:
         print("Place card on reader and re-run script")
     else:
-        
+
         # TODO fix text input
         # if(not nfcData_to_write):
         #     nfcData_to_write = input("Enter URI to write: ")
@@ -162,10 +173,14 @@ else:
             # Establish tag
             tag = nfc.tag.activate(clf, target)
             print(tag)
+            #
 
             # Copy URI to the Tag
             # How to write URI via ndeflib documentation https://ndeflib.readthedocs.io/en/stable/records/uri.html
             tag.ndef.records = [ndef.UriRecord(nfcData_to_write)]
             print("URI Successfully Written")
+            #
+
             # Finally the contactless frontend should be closed.
             clf.close()
+            #

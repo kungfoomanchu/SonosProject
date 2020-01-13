@@ -13,8 +13,8 @@ import configparser
 # import RPi.GPIO as GPIO
 # import time
 # # End Added for LEDs
-# For BlinkStick
-from blinkstick import blinkstick
+# # For BlinkStick
+# from blinkstick import blinkstick
 #
 
 SONOS_BASE_URI = ""
