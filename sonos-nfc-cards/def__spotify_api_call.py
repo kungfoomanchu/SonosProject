@@ -1,15 +1,14 @@
 import spotipy
 import pprint
 from spotipy.oauth2 import SpotifyClientCredentials
+from config import SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET
+
 artist_name="Yo La Tengo"
 album_name="I can hear the heart beating as one"
 
-SPOTIPY_CLIENT_ID='da38819751634ba8a67d75f0b5e4b2e3'
-SPOTIPY_CLIENT_SECRET='633d0f207aad447b934d8ad67b04398a'
 
 client_credentials_manager = SpotifyClientCredentials(client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
 
 def search(album_name,artist_name,search_type,item_returned_limit):
     offset=0
@@ -45,7 +44,7 @@ def return_best(artist_name,album_name):
 
     found_flag=False
     for search_type in ('both','album','artist'):
-        return_list=search_attempt(search_type)  
+        return_list=search_attempt(search_type)
         try_count=0
         try_max=20
         print(search_type)
@@ -65,7 +64,7 @@ def return_best(artist_name,album_name):
             try_count+=1
         if found_flag==True:
             break
-    
+
     #default if no match found
     if found_flag==False:
         return_list=[]
@@ -79,8 +78,8 @@ def return_best(artist_name,album_name):
                 break
             except IndexError:
                 continue
-            
-    
+
+
     #if no results found for each search, should be rare; only for bad search queries
     if found_flag==False:
         print("No Match Found")
