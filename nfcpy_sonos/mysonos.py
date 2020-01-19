@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import argparse
 import math
 import signal # For aborting the script?
-import nfc_SonosController
+import nfcpy_SonosController
 from time import sleep
 # For NFCPy
 import nfc
@@ -40,16 +40,12 @@ def end_read(signal,frame):
 signal.signal(signal.SIGINT, end_read)
 #
 
-# Establish Reader on USB
-# See list of compatible readers at nfcpy.org
-clf = nfc.ContactlessFrontend('usb')
-#
 
 # Setup Parser
 parser = argparse.ArgumentParser(description='Write NFC tags for sonos.')
 parser.add_argument('-test', type=bool, default=False, help='Just test the read but dont perform the action on sonos')
-parser.add_argument('-sonosUri', type=str, default=SonosController.SONOS_BASE_URI, help='The Sonos base Uri to use')
-parser.add_argument('-sonosRoom', type=str, default=SonosController.SONOS_ROOM, help='The Sonos room to play the content at')
+parser.add_argument('-sonosUri', type=str, default=nfcpy_SonosController.SONOS_BASE_URI, help='The Sonos base Uri to use')
+parser.add_argument('-sonosRoom', type=str, default=nfcpy_SonosController.SONOS_ROOM, help='The Sonos room to play the content at')
 parser.add_argument('-debounce', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait after a scan to read again')
 parser.add_argument('-cardTimeout', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait before re-reading the same card')
 #parser.add_argument('-nfcKey', type=str, default='FF:FF:FF:FF:FF:FF', help='The hex code of the nfc key to writ the content default: FF:FF:FF:FF:FF:FF')
@@ -62,8 +58,8 @@ args = parser.parse_args()
 is_test = args.test
 we_write = args.write
 nfcData_to_write = args.uri
-SonosController.SONOS_BASE_URI = args.sonosUri
-SonosController.SONOS_ROOM = args.sonosRoom
+nfcpy_SonosController.SONOS_BASE_URI = args.sonosUri
+nfcpy_SonosController.SONOS_ROOM = args.sonosRoom
 #
 
 # Debounce and cardTimeout settings
@@ -74,8 +70,12 @@ card_timeout = timedelta(seconds = args.cardTimeout)
 #
 
 # If/else for reading, writing, writing in loop
-# TODO: add write loop
 if we_write == "no":
+
+    # Establish Reader on USB
+    # See list of compatible readers at nfcpy.org
+    clf = nfc.ContactlessFrontend('usb')
+    #
 
     print("Add NFC Tag ...")
 
@@ -96,14 +96,13 @@ if we_write == "no":
 
         # If we don't find a card, wait
         # TODO figure out how to make this not annoying
-        # TODO figure out what to do if the card isn't compatible
         if target is None:
             sleep(1)  # don't burn the CPU
             continue
 
         # Get tag info
-        tag = nfc.tag.activate(clf, target)
-        print(tag)
+        # tag = nfc.tag.activate(clf, target)
+        # print(tag)
         #
 
         # This is the generally preferred way to discover and activate contactless targets of any supported type
@@ -116,39 +115,52 @@ if we_write == "no":
             print("No NDEF records found!")
             print("You have 60 seconds to remove card")
             sleep(60)
-            # TODO: clf.close() breaks it here for some reason
-            # Finally the contactless frontend should be closed.
-            #clf.close()
         else:
             print(ndef.UriRecord)
             # print(tag.ndef.records.uri)
             for record in tag.ndef.records:
-                print(record) 
+                print(f'NFC Record {record}')
                 record = tag.ndef.records[0]
-                print(record.name)
-                print(record.uri)
+                print(f'NFC Record Name {record.name}')
+                print(f'NFC URI {record.uri}')
                 nfc_uri = record.uri
-            # 
+            #
 
-            # CardTimeout Code
-            # If the nfc data is the same as previous, then ignore while we are in the timeout
-            # Otherwise send the command.
-            # TODO: filter out play,pause,next,previous etc from the timeout
-            # TODO: ctrl+c isn't working if cardTimeout is prompted
-            if last_nfc_uri == nfc_uri and last_time + card_timeout > now:
-                print("Re-reading the same card too soon, ignoring")
+            # Skip CardTimeout if URI does not contain ":"
+            if ":" in nfc_uri:
+                # CardTimeout Code
+                # If the nfc data is the same as previous, then ignore while we are in the timeout
+                # Otherwise send the command.
+                if last_nfc_uri == nfc_uri and last_time + card_timeout > now:
+                    print("Re-reading the same card too soon, ignoring")
+                else:
+                    last_nfc_uri = nfc_uri
+                    last_time = now
+
+                    # send command to server
+                    if(not is_test):
+                        nfcpy_SonosController.play(nfc_uri)
+                    #
             else:
-                last_nfc_uri = nfc_uri
-                last_time = now
-
+                # TODO: Prevent endless loop
                 # send command to server
+                print("Skipped Card Timeout")
                 if(not is_test):
-                    SonosController.play(nfc_uri)
+                    nfcpy_SonosController.play(nfc_uri)
                 #
 
 elif we_write == "loop":
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
+
+    # Establish Reader on USB
+    # See list of compatible readers at nfcpy.org
+    clf = nfc.ContactlessFrontend('usb')
+    #
+
+    # Establish the types of tags we are looking for
+    target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
+    print(target)
 
     # use creds to create a client to interact with the Google Drive API
     scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
@@ -160,27 +172,32 @@ elif we_write == "loop":
     sheet = client.open("Media Database Project Example (For John)").sheet1
 
     list_of_sheet_records = sheet.get_all_records()
-
+    #print(list_of_sheet_records)
 
     # Add write_card def
     def write_card(uri_to_write,artist_to_write,album_to_write,year_to_write):
 
         # Pass variables from def input through
-        nfcData = uri_to_write
+        nfcData_to_write = uri_to_write
         print("Artist: "+artist_to_write+"\n")
         print("Album: "+album_to_write+" ("+str(year_to_write)+")"+"\n")
-        print ("URI that will be written: %s" % nfcData)
+        print ("URI that will be written: %s" % nfcData_to_write)
 
-        # TODO add the code for the write section. everything else is the same
+        input("Add NFC tag, then press Enter to continue...")
 
+        if(not is_test):
+            # Establish tag
+            tag = nfc.tag.activate(clf, target)
+            print(tag)
+            #
 
+            # Copy URI to the Tag
+            # How to write URI via ndeflib documentation https://ndeflib.readthedocs.io/en/stable/records/uri.html
+            tag.ndef.records = [ndef.UriRecord(nfcData_to_write)]
+            print("URI Successfully Written")
+            #
 
-
-
-
-
-
-
+# TODO Ctrl+C didn't work as expected
 
     # Loop to extract info from Google Sheet and then send to 'write card'
     for record in list_of_sheet_records:
@@ -197,27 +214,31 @@ elif we_write == "loop":
                 write_card(uri_to_write,artist_to_write,album_to_write,year_to_write)
 
 else:
+    # Establish Reader on USB
+    # See list of compatible readers at nfcpy.org
+    clf = nfc.ContactlessFrontend('usb')
+    #
+
     # Establish the types of tags we are looking for
     target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
     print(target)
 
-    # TODO - add a checker to see if card is present
     # If we don't find a card, wait
     # if target is None:
     #     sleep(1)  # don't burn the CPU
     #     continue
+
     if target is None:
         print("Place card on reader and re-run script")
     else:
 
-        # TODO fix text input. It always fails, not sure why
-        # if(not nfcData_to_write):
-        #     nfcData_to_write = input("Enter URI to write: ")
-        nfcData_to_write = "spotify:album:65zhpgwMMRxncpa7zHckQ6"
+        if(not nfcData_to_write):
+            nfcData_to_write = input("Enter URI to write: ")
+        # nfcData_to_write = "pause"
 
-        # 
+        #
         print(f'The URI which will be written is: {nfcData_to_write}')
-        print("Add NFC Tag ...")
+        input("Add NFC tag, then press Enter to continue...")
 
         if(not is_test):
             # Establish tag

@@ -110,13 +110,13 @@ while continue_reading:
 
         # If the nfc data is the same as previous, then ignore while we are in the timeout
         # Otherwise send the command.
-        # TODO: filter out play,pause,next,previous etc from the timeout
-        if last_nfc_uri == nfcData and last_time + card_timeout > now:
-            print("Re-reading the same card too soon, ignoring")
-        else:
-            last_nfc_uri = nfcData
-            last_time = now
+        if ":" in nfcData:
+            if last_nfc_uri == nfcData and last_time + card_timeout > now:
+                print("Re-reading the same card too soon, ignoring")
+            else:
+                last_nfc_uri = nfcData
+                last_time = now
 
-            # send command to server
-            if(not is_test):
-                SonosController.play(nfcData)
+                # send command to server
+                if(not is_test):
+                    SonosController.play(nfcData)

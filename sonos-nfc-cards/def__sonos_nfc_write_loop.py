@@ -58,7 +58,7 @@ def write_card(uri_to_write,artist_to_write,album_to_write,year_to_write):
         # Print UID
         print("Card UID: %s:%s:%s:%s" % (uid[0], uid[1], uid[2], uid[3]))
 
-            # Select the scanned tag
+        # Select the scanned tag
         MIFAREReader.MFRC522_SelectTag(uid)
 
         # Write the data
