@@ -16,7 +16,9 @@ continue_reading = True
 while continue_reading:
     #creates object 'media_buttons' to store the data
     #you can call it whatever you like
-    media_buttons = InputDevice('/dev/input/event1')
+    # TODO - find bluetooth device by MAC address and add that to settings
+    # Find device by running: python /usr/local/lib/python2.7/dist-packages/evdev/evtest.py
+    media_buttons = InputDevice('/dev/input/event6')
 
     # Hold if media button is not powered on
     # TODO this failsafe to prevent script from running if buttons not powered on doesn't currently work

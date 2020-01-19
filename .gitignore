@@ -32,9 +32,9 @@ python-sonos-nfc/log.txt
 
 # For sonos-nfc-cards folder
 sonos-nfc-cards/images
-sonos-nfc-cards/client_secret.json
-sonos-nfc-cards/config.py
 
-# Pycache
+# Universal
 *__pycache__
 *.pyc
+*/client_secret.json
+*/config.py

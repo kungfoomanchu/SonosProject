@@ -8,7 +8,10 @@
 #
 
 from datetime import datetime, timedelta
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+# For RTK.GPIO board
+#from RTk import GPIO
+import RTk.GPIO as GPIO
 import MFRC522
 import argparse
 import math

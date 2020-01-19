@@ -6,6 +6,7 @@ from config import SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET
 artist_name="Yo La Tengo"
 album_name="I can hear the heart beating as one"
 
+# TODO Integrate 'Spotify Lookup' (Yes/No) column 
 
 client_credentials_manager = SpotifyClientCredentials(client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)

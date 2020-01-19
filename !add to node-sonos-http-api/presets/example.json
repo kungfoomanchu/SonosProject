@@ -1,0 +1,35 @@
+{
+  "players": [
+    {
+      "roomName": "Living Room",
+      "volume": 10
+    },
+    {
+      "roomName": "Kitchen",
+      "volume": 10
+    },
+    {
+      "roomName": "Office",
+      "volume": 10
+    },
+    {
+      "roomName": "Master Bedroom",
+      "volume": 10
+    },
+    {
+      "roomName": "TV",
+      "volume": 15
+    },
+    {
+      "roomName": "Baseumpt",
+      "volume": 15
+    }
+  ],
+  "playMode": {
+    "shuffle": true,
+    "repeat": "all",
+    "crossfade": false
+  },
+  "pauseOthers": false
+
+}

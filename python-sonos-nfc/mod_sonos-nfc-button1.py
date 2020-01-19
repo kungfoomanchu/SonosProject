@@ -7,7 +7,9 @@
 #    along with sonos-nfc-read.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+# For RTK.GPIO board
+from RTk import GPIO
 import MFRC522
 import signal
 import time

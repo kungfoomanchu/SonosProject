@@ -1,0 +1,34 @@
+{
+  "voicerss": "Your api key for TTS with voicerss",
+  "microsoft": {
+    "key": "Your api for Bing speech API",
+    "name": "ZiraRUS"
+  },
+  "port": 5005,
+  "ip": "0.0.0.0",
+  "securePort": 5006,
+  "https": {
+    "key": "/path/to/key.pem",
+    "cert" : "/path/to/cert.pem"
+
+    //... for pfx (alternative configuration)
+    "pfx": "/path/to/pfx.pfx",
+    "passphrase": "your-passphrase-if-applicable"
+  },
+  "auth": {
+    "username": "admin",
+    "password": "password"
+  },
+  "announceVolume": 40,
+  "pandora": {
+    "username": "your-pandora-account-email-address",
+    "password": "your-pandora-password"
+  },
+  "spotify": {
+    "clientId": "your-spotify-application-clientId",
+    "clientSecret": "your-spotify-application-clientSecret"
+  },
+  "library": {
+    "randomQueueLimit": 50
+  }
+}

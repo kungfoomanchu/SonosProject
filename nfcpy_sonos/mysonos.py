@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import argparse
 import math
 import signal # For aborting the script?
-import SonosController
+import nfc_SonosController
 from time import sleep
 # For NFCPy
 import nfc
@@ -53,7 +53,7 @@ parser.add_argument('-sonosRoom', type=str, default=SonosController.SONOS_ROOM, 
 parser.add_argument('-debounce', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait after a scan to read again')
 parser.add_argument('-cardTimeout', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait before re-reading the same card')
 #parser.add_argument('-nfcKey', type=str, default='FF:FF:FF:FF:FF:FF', help='The hex code of the nfc key to writ the content default: FF:FF:FF:FF:FF:FF')
-parser.add_argument('-write', type=str, default='no', help='Type yes if you want to write cards instead')
+parser.add_argument('-write', type=str, default='no', help='Type yes if you want to write individual cards, "loop" if you want to write multiple cards from google spreasheet')
 parser.add_argument('-uri', type=str, default='', help='The content that should be written')
 args = parser.parse_args()
 #
@@ -146,10 +146,60 @@ if we_write == "no":
                     SonosController.play(nfc_uri)
                 #
 
+elif we_write == "loop":
+    import gspread
+    from oauth2client.service_account import ServiceAccountCredentials
+
+    # use creds to create a client to interact with the Google Drive API
+    scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+    creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+    client = gspread.authorize(creds)
+
+    # Find a workbook by name and open the first sheet
+    # Make sure you use the righto name here.
+    sheet = client.open("Media Database Project Example (For John)").sheet1
+
+    list_of_sheet_records = sheet.get_all_records()
+
+
+    # Add write_card def
+    def write_card(uri_to_write,artist_to_write,album_to_write,year_to_write):
+
+        # Pass variables from def input through
+        nfcData = uri_to_write
+        print("Artist: "+artist_to_write+"\n")
+        print("Album: "+album_to_write+" ("+str(year_to_write)+")"+"\n")
+        print ("URI that will be written: %s" % nfcData)
+
+        # TODO add the code for the write section. everything else is the same
+
+
+
+
+
+
+
+
+
+
+    # Loop to extract info from Google Sheet and then send to 'write card'
+    for record in list_of_sheet_records:
+        # Assign Google Sheet data to variable
+        uri_to_write=record['Spotify URI (Result)']
+        artist_to_write=record['Artist (Result)']
+        album_to_write=record['Album (Result)']
+        year_to_write=record['Year (Result)']
+        skip_or_print=record['Skip vs Print']
+
+        # Skip certain records and send info to def
+        if uri_to_write!='No Match':
+            if skip_or_print!='Skip':
+                write_card(uri_to_write,artist_to_write,album_to_write,year_to_write)
+
 else:
     # Establish the types of tags we are looking for
     target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-    print(target) 
+    print(target)
 
     # TODO - add a checker to see if card is present
     # If we don't find a card, wait
@@ -160,13 +210,13 @@ else:
         print("Place card on reader and re-run script")
     else:
 
-        # TODO fix text input
+        # TODO fix text input. It always fails, not sure why
         # if(not nfcData_to_write):
         #     nfcData_to_write = input("Enter URI to write: ")
         nfcData_to_write = "spotify:album:65zhpgwMMRxncpa7zHckQ6"
 
-        # TODO add notification for URI to be written
-
+        # 
+        print(f'The URI which will be written is: {nfcData_to_write}')
         print("Add NFC Tag ...")
 
         if(not is_test):
