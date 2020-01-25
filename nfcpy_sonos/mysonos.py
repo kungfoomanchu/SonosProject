@@ -51,6 +51,7 @@ parser.add_argument('-cardTimeout', type=int, default=DEFAULT_DEBOUNCE, help='Th
 #parser.add_argument('-nfcKey', type=str, default='FF:FF:FF:FF:FF:FF', help='The hex code of the nfc key to writ the content default: FF:FF:FF:FF:FF:FF')
 parser.add_argument('-write', type=str, default='no', help='Type yes if you want to write individual cards, "loop" if you want to write multiple cards from google spreasheet')
 parser.add_argument('-uri', type=str, default='', help='The content that should be written')
+# TODO - Add Quiet Time
 args = parser.parse_args()
 #
 
@@ -143,6 +144,7 @@ if we_write == "no":
                     #
             else:
                 # TODO: Prevent endless loop
+                # TODO: there was a break here when adding a new card too soon?
                 # send command to server
                 print("Skipped Card Timeout")
                 if(not is_test):
@@ -232,6 +234,7 @@ else:
         print("Place card on reader and re-run script")
     else:
 
+        # TODO - this happens twice
         if(not nfcData_to_write):
             nfcData_to_write = input("Enter URI to write: ")
         # nfcData_to_write = "pause"
