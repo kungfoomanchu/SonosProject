@@ -7,6 +7,7 @@
 #    along with sonos-nfc-read.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# TODO See if it makes sense to integrate this: https://nfcpy.readthedocs.io/en/latest/examples/tagtool.html
 
 from datetime import datetime, timedelta
 import argparse
@@ -117,7 +118,7 @@ if we_write == "no":
             print("You have 60 seconds to remove card")
             sleep(60)
         else:
-            print(ndef.UriRecord)
+            print(ndef.UriRecord) # https://ndeflib.readthedocs.io/en/stable/records/uri.html
             # print(tag.ndef.records.uri)
             for record in tag.ndef.records:
                 print(f'NFC Record {record}')
