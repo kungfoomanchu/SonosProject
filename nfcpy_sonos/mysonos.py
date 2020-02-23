@@ -7,13 +7,13 @@
 #    along with sonos-nfc-read.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# TODO See if it makes sense to integrate this: https://nfcpy.readthedocs.io/en/latest/examples/tagtool.html
 
 from datetime import datetime, timedelta
 import argparse
 import math
 import signal # For aborting the script?
 import nfcpy_SonosController
+import time
 from time import sleep
 # For NFCPy
 import nfc
@@ -50,7 +50,7 @@ parser.add_argument('-sonosRoom', type=str, default=nfcpy_SonosController.SONOS_
 parser.add_argument('-debounce', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait after a scan to read again')
 parser.add_argument('-cardTimeout', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait before re-reading the same card')
 #parser.add_argument('-nfcKey', type=str, default='FF:FF:FF:FF:FF:FF', help='The hex code of the nfc key to writ the content default: FF:FF:FF:FF:FF:FF')
-parser.add_argument('-write', type=str, default='no', help='Type yes if you want to write individual cards, "loop" if you want to write multiple cards from google spreasheet')
+parser.add_argument('-write', type=str, default='no', help='Type "yes" if you want to write individual cards, "loop" if you want to write multiple cards from google spreasheet')
 parser.add_argument('-uri', type=str, default='', help='The content that should be written')
 # TODO - Add Quiet Time
 args = parser.parse_args()
@@ -71,6 +71,10 @@ debounce = timedelta(seconds = args.debounce)
 card_timeout = timedelta(seconds = args.cardTimeout)
 #
 
+
+######################################################################
+######## This is the Read Card Section
+######################################################################
 # If/else for reading, writing, writing in loop
 if we_write == "no":
 
@@ -97,7 +101,7 @@ if we_write == "no":
         #
 
         # If we don't find a card, wait
-        # TODO figure out how to make this not annoying
+        # TODO MAYBE THIS IS OK - figure out how to make this not annoying
         if target is None:
             sleep(1)  # don't burn the CPU
             continue
@@ -134,6 +138,7 @@ if we_write == "no":
                 # If the nfc data is the same as previous, then ignore while we are in the timeout
                 # Otherwise send the command.
                 if last_nfc_uri == nfc_uri and last_time + card_timeout > now:
+                    sleep(2)
                     print("Re-reading the same card too soon, ignoring")
                 else:
                     last_nfc_uri = nfc_uri
@@ -144,14 +149,15 @@ if we_write == "no":
                         nfcpy_SonosController.play(nfc_uri)
                     #
             else:
-                # TODO: Prevent endless loop
-                # TODO: there was a break here when adding a new card too soon?
                 # send command to server
-                print("Skipped Card Timeout")
+                print("no ':' in URI, so using playPause")
                 if(not is_test):
-                    nfcpy_SonosController.play(nfc_uri)
+                    nfcpy_SonosController.playPause(nfcpy_SonosController.SONOS_ROOM, nfc_uri)
                 #
 
+######################################################################
+######## This is the LOOP Write Section
+######################################################################
 elif we_write == "loop":
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
@@ -159,90 +165,98 @@ elif we_write == "loop":
     # Establish Reader on USB
     # See list of compatible readers at nfcpy.org
     clf = nfc.ContactlessFrontend('usb')
-    #
 
-    # Establish the types of tags we are looking for
-    target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-    print(target)
+    while continue_reading:
 
-    # use creds to create a client to interact with the Google Drive API
-    scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-    client = gspread.authorize(creds)
+        # Establish the types of tags we are looking for
+        target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
+        print(target)
 
-    # Find a workbook by name and open the first sheet
-    # Make sure you use the righto name here.
-    sheet = client.open("Media Database Project Example (For John)").sheet1
+        # use creds to create a client to interact with the Google Drive API
+        scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+        creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+        client = gspread.authorize(creds)
 
-    list_of_sheet_records = sheet.get_all_records()
-    #print(list_of_sheet_records)
+        # Find a workbook by name and open the first sheet
+        # Make sure you use the righto name here.
+        sheet = client.open("Media Database Project Example (For John)").sheet1
 
-    # Add write_card def
-    def write_card(uri_to_write,artist_to_write,album_to_write,year_to_write):
+        list_of_sheet_records = sheet.get_all_records()
+        #print(list_of_sheet_records)
 
-        # Pass variables from def input through
-        nfcData_to_write = uri_to_write
-        print("Artist: "+artist_to_write+"\n")
-        print("Album: "+album_to_write+" ("+str(year_to_write)+")"+"\n")
-        print ("URI that will be written: %s" % nfcData_to_write)
+        # Add write_card def
+        def write_card(uri_to_write,artist_to_write,album_to_write,year_to_write):
 
-        input("Add NFC tag, then press Enter to continue...")
+            # Pass variables from def input through
+            nfcData_to_write = uri_to_write
+            print("Artist: "+artist_to_write+"\n")
+            print("Album: "+album_to_write+" ("+str(year_to_write)+")"+"\n")
+            print ("URI that will be written: %s" % nfcData_to_write)
 
-        if(not is_test):
-            # Establish tag
-            tag = nfc.tag.activate(clf, target)
-            print(tag)
-            #
+            # TODO Ctrl+C doesn't work as expected
 
-            # Copy URI to the Tag
-            # How to write URI via ndeflib documentation https://ndeflib.readthedocs.io/en/stable/records/uri.html
-            tag.ndef.records = [ndef.UriRecord(nfcData_to_write)]
-            print("URI Successfully Written")
-            #
+            input("Add NFC tag, then press Enter to continue...")
 
-# TODO Ctrl+C didn't work as expected
+            if(not is_test):
+                # Establish tag
+                tag = nfc.tag.activate(clf, target)
+                print(tag)
+                #
 
-    # Loop to extract info from Google Sheet and then send to 'write card'
-    for record in list_of_sheet_records:
-        # Assign Google Sheet data to variable
-        uri_to_write=record['Spotify URI (Result)']
-        artist_to_write=record['Artist (Result)']
-        album_to_write=record['Album (Result)']
-        year_to_write=record['Year (Result)']
-        skip_or_print=record['Skip vs Print']
+                # Copy URI to the Tag
+                # How to write URI via ndeflib documentation https://ndeflib.readthedocs.io/en/stable/records/uri.html
+                tag.ndef.records = [ndef.UriRecord(nfcData_to_write)]
+                print("URI Successfully Written")
+                #
 
-        # Skip certain records and send info to def
-        if uri_to_write!='No Match':
-            if skip_or_print!='Skip':
-                write_card(uri_to_write,artist_to_write,album_to_write,year_to_write)
+        # Loop to extract info from Google Sheet and then send to 'write card'
+        for record in list_of_sheet_records:
+            # Assign Google Sheet data to variable
+            uri_to_write=record['Spotify URI (Result)']
+            artist_to_write=record['Artist (Result)']
+            album_to_write=record['Album (Result)']
+            year_to_write=record['Year (Result)']
+            skip_or_print=record['Skip vs Print']
 
+            # Skip certain records and send info to def
+            if uri_to_write!='No Match':
+                if skip_or_print!='Skip':
+                    write_card(uri_to_write,artist_to_write,album_to_write,year_to_write)
+
+
+######################################################################
+######## This is the Single Write Section
+######################################################################
 else:
     # Establish Reader on USB
     # See list of compatible readers at nfcpy.org
     clf = nfc.ContactlessFrontend('usb')
-    #
 
-    # Establish the types of tags we are looking for
-    target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-    print(target)
+    print("Add NFC Tag ...")
 
-    # If we don't find a card, wait
-    # if target is None:
-    #     sleep(1)  # don't burn the CPU
-    #     continue
+    # Program start
+    # This loop keeps checking for chips. If one is near it will get the UID and authenticate
+    while continue_reading:
 
-    if target is None:
-        print("Place card on reader and re-run script")
-    else:
+        # Establish the types of tags we are looking for
+        target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
+        print(target)
 
-        # TODO - this happens twice
+        # If we don't find a card, wait
+        if target is None:
+            sleep(1)  # don't burn the CPU
+            continue
+
+        # if target is None:
+        #     print("Place card on reader and re-run script")
+        # else:
+
         if(not nfcData_to_write):
             nfcData_to_write = input("Enter URI to write: ")
         # nfcData_to_write = "pause"
 
         #
-        print(f'The URI which will be written is: {nfcData_to_write}')
-        input("Add NFC tag, then press Enter to continue...")
+        input(f'The URI which will be written is: {nfcData_to_write}      Press Enter to continue...')
 
         if(not is_test):
             # Establish tag
@@ -256,6 +270,7 @@ else:
             print("URI Successfully Written")
             #
 
-            # Finally the contactless frontend should be closed.
-            clf.close()
-            #
+            # # Finally the contactless frontend should be closed.
+            continue_reading = False
+            # clf.close()
+            # #

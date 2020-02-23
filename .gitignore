@@ -38,3 +38,4 @@ sonos-nfc-cards/images
 *.pyc
 */client_secret.json
 */config.py
+*/test.mp3

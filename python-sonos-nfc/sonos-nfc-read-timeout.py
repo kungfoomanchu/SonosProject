@@ -8,6 +8,7 @@
 #
 
 from datetime import datetime, timedelta
+from time import sleep
 import RPi.GPIO as GPIO
 import MFRC522
 import argparse
@@ -112,6 +113,7 @@ while continue_reading:
         # Otherwise send the command.
         if ":" in nfcData:
             if last_nfc_uri == nfcData and last_time + card_timeout > now:
+                sleep(2)
                 print("Re-reading the same card too soon, ignoring")
             else:
                 last_nfc_uri = nfcData

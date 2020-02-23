@@ -1,8 +1,8 @@
 # Import the necessary libraries.
 # gpiozero contains our JamHat object.
-from gpiozero import JamHat
+from gpiozero import JamHat # pylint: disable=unresolved-import
 from time import sleep
-import SonosController
+import nfcpy_SonosController
 
 # Initialise the JamHat object.
 jh = JamHat()
@@ -19,18 +19,18 @@ try:
                 jh.button_1.wait_for_release()
                 print('Next Button Pressed')
                 nfcData = 'next'
-                SonosController.play(nfcData)
+                nfcpy_SonosController.play(nfcData)
             if jh.button_2.is_pressed:
                 counter += 1
                 jh.button_2.wait_for_release()
                 if (counter % 2) == 0:
                     print('Play Button Pressed')
                     nfcData = 'play'
-                    SonosController.play(nfcData)
+                    nfcpy_SonosController.play(nfcData)
                 else:
                     print('Pause Button Pressed')
                     nfcData = 'pause'
-                    SonosController.play(nfcData)
+                    nfcpy_SonosController.play(nfcData)
         sleep(0.1)
 except KeyboardInterrupt:
     # If someone presses CTRL+C, close the JamHat, freeing of the Pins for use elsewhere.
