@@ -39,3 +39,6 @@ sonos-nfc-cards/images
 */client_secret.json
 */config.py
 */test.mp3
+
+# Folder
+IO_testing

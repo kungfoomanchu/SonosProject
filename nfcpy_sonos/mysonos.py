@@ -19,6 +19,9 @@ from time import sleep
 import nfc
 import ndef
 from nfc.clf import RemoteTarget
+# # Had to add this duplicate for queit time for some reason
+# import datetime
+import pause
 #
 
 
@@ -49,10 +52,9 @@ parser.add_argument('-sonosUri', type=str, default=nfcpy_SonosController.SONOS_B
 parser.add_argument('-sonosRoom', type=str, default=nfcpy_SonosController.SONOS_ROOM, help='The Sonos room to play the content at')
 parser.add_argument('-debounce', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait after a scan to read again')
 parser.add_argument('-cardTimeout', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait before re-reading the same card')
-#parser.add_argument('-nfcKey', type=str, default='FF:FF:FF:FF:FF:FF', help='The hex code of the nfc key to writ the content default: FF:FF:FF:FF:FF:FF')
 parser.add_argument('-write', type=str, default='no', help='Type "yes" if you want to write individual cards, "loop" if you want to write multiple cards from google spreasheet')
 parser.add_argument('-uri', type=str, default='', help='The content that should be written')
-# TODO - Add Quiet Time
+parser.add_argument('-quietTime', type=str, default=False, help='Type "yes" to enable quiet time from 9 PM to 7 AM')
 args = parser.parse_args()
 #
 
@@ -62,6 +64,7 @@ we_write = args.write
 nfcData_to_write = args.uri
 nfcpy_SonosController.SONOS_BASE_URI = args.sonosUri
 nfcpy_SonosController.SONOS_ROOM = args.sonosRoom
+quietT = args.quietTime
 #
 
 # Debounce and cardTimeout settings
@@ -89,15 +92,31 @@ if we_write == "no":
     # This loop keeps checking for chips. If one is near it will get the UID and authenticate
     while continue_reading:
 
-        now = datetime.now()
-
         # Debounce card reader
+        now = datetime.now()
         if last_time + debounce > now:
             continue
+        # End Debounce?
+
+
+        # Start Quiet Time
+        if quietT == 'yes':
+            nowtime = datetime.now()
+            # print(nowtime)
+            # print(nowtime.hour)
+            if nowtime.hour <= 21 and nowtime.hour >= 7:
+                pass
+            else:
+                print("It's Quiet Time. We'll check again in a minute")
+                time.sleep(60)
+                pause.until(nowtime.hour >= 7)
+        else:
+            pass
+
 
         # Establish the types of tags we are looking for
         target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-        print(target)
+        #print(target)
         #
 
         # If we don't find a card, wait
