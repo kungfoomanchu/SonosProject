@@ -20,12 +20,6 @@ su pi -c 'node /home/pi/SonosProject/node-sonos-http-api/server.js < /dev/null &
 # Start NFCPy USB NFC Reader
 su pi -c 'python3 /home/pi/SonosProject/nfcpy_sonos/mysonos.py -sonosUri http://localhost:5005 -sonosRoom Kitchen &'
 
-
-# Start Buttons for GPIO Breadboard
-# su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-button1.py &'
-# su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-button2.py &'
-# su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-button3.py &'
-
 # Start JamHat buttons
 su pi -c 'python3 /home/pi/SonosProject/nfcpy_sonos/jamhat_buttons.py &'
 
@@ -34,6 +28,11 @@ su pi -c 'python3 /home/pi/SonosProject/nfcpy_sonos/bluetooth_media_button_mappi
 
 # Restart Each Night at 3 AM
 su pi -c 'shutdown -r 03:00'
+
+# Start Buttons for GPIO Breadboard
+# su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-button1.py &'
+# su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-button2.py &'
+# su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-button3.py &'
 
 # Print the IP address
 _IP=$(hostname -I) || true

@@ -52,7 +52,7 @@ parser.add_argument('-sonosUri', type=str, default=nfcpy_SonosController.SONOS_B
 parser.add_argument('-sonosRoom', type=str, default=nfcpy_SonosController.SONOS_ROOM, help='The Sonos room to play the content at')
 parser.add_argument('-debounce', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait after a scan to read again')
 parser.add_argument('-cardTimeout', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait before re-reading the same card')
-parser.add_argument('-write', type=str, default='no', help='Type "yes" if you want to write individual cards, "loop" if you want to write multiple cards from google spreasheet')
+parser.add_argument('-write', type=str, default='no', help='Type "yes" if you want to write individual cards, "loop" if you want to write multiple cards from google spreadsheet')
 parser.add_argument('-uri', type=str, default='', help='The content that should be written')
 parser.add_argument('-quietTime', type=str, default=False, help='Type "yes" to enable quiet time from 9 PM to 7 AM')
 args = parser.parse_args()

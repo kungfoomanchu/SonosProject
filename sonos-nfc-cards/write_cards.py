@@ -9,7 +9,7 @@ client = gspread.authorize(creds)
 
 # Find a workbook by name and open the first sheet
 # Make sure you use the righto name here.
-sheet = client.open("Media Database Project Example (For John)").sheet1
+sheet = client.open("NFC Cards Database").sheet1
 
 list_of_sheet_records = sheet.get_all_records()
 for record in list_of_sheet_records:
