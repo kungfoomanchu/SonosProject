@@ -257,3 +257,4 @@ Supported formats are:
 * Upgrade the old NFC MFRC522 code
 	* Add quietTime to MFRC522 code
 * See if it makes sense to integrate this: https://nfcpy.readthedocs.io/en/latest/examples/tagtool.html to mysonos.py
+* Explain ``settings.ini`` in ``nfcpy_sonos`` folder

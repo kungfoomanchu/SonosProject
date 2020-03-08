@@ -54,7 +54,7 @@ while continue_reading:
 
     # Establish the types of tags we are looking for
     target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-    print(target) 
+    # print(target) 
 
     # If we don't find a card, wait
     # TODO figure out how to make this not annoying
@@ -92,12 +92,14 @@ while continue_reading:
             client_status = str(client_status)
             play_success = "'state': 'play'"
             if play_success in client_status:
-
-                for bstick in blinkstick.find_all():
-                    # For BlinkStick
-                    led = blinkstick.find_first()
-                    led.set_color(name="green")
-                    led.pulse(name="blue")
-                    time.sleep(3)
-                    bstick.turn_off()
-                    # End BlinkStick
+                try:
+                    for bstick in blinkstick.find_all():
+                        # For BlinkStick
+                        led = blinkstick.find_first()
+                        led.set_color(name="green")
+                        led.pulse(name="blue")
+                        time.sleep(3)
+                        bstick.turn_off()
+                        # End BlinkStick
+                except:
+                    print("Blinkstick Error in testing_mopidy.py")

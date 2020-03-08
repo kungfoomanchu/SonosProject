@@ -22,15 +22,26 @@ from nfc.clf import RemoteTarget
 # # Had to add this duplicate for queit time for some reason
 # import datetime
 import pause
+import configparser
 #
 
 
 # Set up Variables
 continue_reading = True
 is_test = False
-DEFAULT_DEBOUNCE = 10
-DEFAULT_CARD_TIMEOUT = 0
+
+# Clear variables. Not sure if this is necessary
 nfcData_to_write = ""
+forcedresponse = ""
+
+# Import Variables form settings.ini file
+config = configparser.ConfigParser()
+config.read('settings.ini')
+DEFAULT_DEBOUNCE = config.get('MySonos', 'debounce', fallback='10')
+DEFAULT_CARD_TIMEOUT = config.get('MySonos', 'cardTimeout', fallback='0')
+DEFAULT_QUIETTIME = config.get('MySonos', 'quietTime', fallback='No')
+DEFAULT_LIGHTSONOFF = config.get('MySonos', 'lightsonoff', fallback='off')
+DEFAULT_LIGHTTYPE = config.get('MySonos', 'lighttype', fallback='blinkstick')
 #
 
 ## Capture SIGINT for cleanup when the script is aborted
@@ -52,9 +63,11 @@ parser.add_argument('-sonosUri', type=str, default=nfcpy_SonosController.SONOS_B
 parser.add_argument('-sonosRoom', type=str, default=nfcpy_SonosController.SONOS_ROOM, help='The Sonos room to play the content at')
 parser.add_argument('-debounce', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait after a scan to read again')
 parser.add_argument('-cardTimeout', type=int, default=DEFAULT_DEBOUNCE, help='The amount of time to wait before re-reading the same card')
+parser.add_argument('-quietTime', type=str, default=DEFAULT_QUIETTIME, help='Type "yes" to enable quiet time from 9 PM to 7 AM')
+parser.add_argument('-lightsOnOff', type=str, default=DEFAULT_LIGHTSONOFF, help='"on" or "off"')
+parser.add_argument('-lightType', type=str, default=DEFAULT_LIGHTTYPE, help='options are "jamhat", "blinkstick", "GPIO"')
 parser.add_argument('-write', type=str, default='no', help='Type "yes" if you want to write individual cards, "loop" if you want to write multiple cards from google spreadsheet')
 parser.add_argument('-uri', type=str, default='', help='The content that should be written')
-parser.add_argument('-quietTime', type=str, default=False, help='Type "yes" to enable quiet time from 9 PM to 7 AM')
 args = parser.parse_args()
 #
 
@@ -65,6 +78,8 @@ nfcData_to_write = args.uri
 nfcpy_SonosController.SONOS_BASE_URI = args.sonosUri
 nfcpy_SonosController.SONOS_ROOM = args.sonosRoom
 quietT = args.quietTime
+lightsOnOff = args.lightsOnOff
+lightType = args.lightType
 #
 
 # Debounce and cardTimeout settings
@@ -165,7 +180,8 @@ if we_write == "no":
 
                     # send command to server
                     if(not is_test):
-                        nfcpy_SonosController.play(nfc_uri)
+                        # TODO ADD LIGHTS COMMAND TO THIS
+                        nfcpy_SonosController.playRoomLights(nfc_uri,lightsOnOff,lightType,forcedresponse)
                     #
             else:
                 # send command to server
