@@ -41,7 +41,7 @@ DEFAULT_DEBOUNCE = config.get('MySonos', 'debounce', fallback='10')
 DEFAULT_CARD_TIMEOUT = config.get('MySonos', 'cardTimeout', fallback='0')
 DEFAULT_QUIETTIME = config.get('MySonos', 'quietTime', fallback='No')
 DEFAULT_LIGHTSONOFF = config.get('MySonos', 'lightsonoff', fallback='off')
-DEFAULT_LIGHTTYPE = config.get('MySonos', 'lighttype', fallback='blinkstick')
+DEFAULT_LIGHTTYPE = config.get('MySonos', 'lighttype', fallback='jamhat')
 #
 
 ## Capture SIGINT for cleanup when the script is aborted
