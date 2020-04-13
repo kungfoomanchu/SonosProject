@@ -252,9 +252,10 @@ Supported formats are:
 -   [http://localhost:5005/kitchen/nfc/say/Hello%20Frank/en-us/80](http://localhost:5005/kitchen/nfc/say/Hello%20Frank/en-us/80)
 -   [http://localhost:5005/kitchen/nfc/spotify:album:3NFNNMIWnByvVPvCf7LsRU](http://localhost:5005/kitchen/nfc/spotify:album:3NFNNMIWnByvVPvCf7LsRU)
 -   [http://localhost:5005/kitchen/pause](http://localhost:5005/kitchen/pause)
--   [http://localhost:5005/kitchen/clip/sample_clip.mp3](http://localhost:5005/kitchen/clip/sample_clip.mp3)
--   [http://localhost:5005/kitchen/volume/36](http://localhost:5005/kitchen/volume/36)
+-   [http://localhost:5005/kitchen/clip/sample_clip.mp3](http://localhost:5005/kitchen/clip/sample_clip.mp3) - This will play a sound clip in the folder ``node-sonos-http-api/static/clips``
+-   [http://localhost:5005/kitchen/volume/36](http://localhost:5005/kitchen/volume/36) - This sets the volume to 36
 -   [http://localhost:5005/Kitchen/playlist/test](http://localhost:5005/Kitchen/playlist/test) - This will play the Sonos playlist named 'test'. Substitute 'test' for your own playlist
+-   For more functionality, see [https://github.com/jishi/node-sonos-http-api](https://github.com/jishi/node-sonos-http-api). Most of it should work, but you might have to experiment
 
 ### Stuff to Do
 * Upgrade the old NFC MFRC522 code
