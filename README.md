@@ -88,11 +88,11 @@ Blinkstick
 ``echo "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"20a0\", ATTR{idProduct}==\"41e5\", MODE:=\"0666\" | sudo tee /etc/udev/rules.d/85-blinkstick.rules"``
 * More resources for BlinkStick
      * [https://github.com/arvydas/blinkstick-python/wiki/Command-line-tool-options](https://github.com/arvydas/blinkstick-python/wiki/Command-line-tool-options)
-    - [https://github.com/arvydas/blinkstick-python](https://github.com/arvydas/blinkstick-python) 
+    - [https://github.com/arvydas/blinkstick-python](https://github.com/arvydas/blinkstick-python)
 
 JamHat
 * For more information: https://github.com/modmypi/Jam-HAT
-* You shouldn't need to install anything, but just in case, you can run this: 
+* You shouldn't need to install anything, but just in case, you can run this:
 ```
 sudo apt-get update
 sudo apt-get install python3-gpiozero python-gpiozero
@@ -228,30 +228,33 @@ Write Cards
 
 `python sonos-nfc-write.py -uri [URI]` 
 
-will write a card with an URI that the sonos controller can play. 
+will write a card with an URI that the sonos controller can play.
 
-Supported formats are: 
-* Local Playlist: 
-	* Format: playlist:[Playlist Name] 
+Supported formats are:
+* Local Playlist:
+	* Format: playlist:[Playlist Name]
 	* Example: _playlist:Test 1_
-* Spotify: 
+* Spotify:
 	* Format: [Spotify URI] )
 	* Example: _spotify:album:12gOUR61KU69vYMaKZOPHV_
-* Apple Music: 
-	* Format: applemusic:[song|album]:[id] 
+* Apple Music:
+	* Format: applemusic:[song|album]:[id]
 	* Example: _applemusic:song:55364259_ or _applemusic:album:355363490_
-* Amazon Music: 
-	* Format: amazonmusic:[song|album]:[id] 
+* Amazon Music:
+	* Format: amazonmusic:[song|album]:[id]
 	* Example: _amazonmusic:song:B009C7ZG38_ or _amazonmusic:album:B00720Z8PS_
-* TuneIn: 
-	* Format: tunein:[id] 
+* TuneIn:
+	* Format: tunein:[id]
 	* Example: _tunein:8007_
 
 # Test Some URLs
  If you test these URLs on a computer other than the Pi where the node server is running, make sure to substitute ``localhost`` with the IP address for the device on which the Node server is running
--   [http://localhost:5005/kitchen/nfc/say/Hello%20Frank](http://localhost:5005/kitchen/nfc/say/Hello%20Frank)
--   [http://localhost:5005/kitchen/nfc/spotify:album:3NFNNMIWnByvVPvCf7LsRU](http://192.168.1.198:5005/kitchen/nfc/spotify:album:3NFNNMIWnByvVPvCf7LsRU)
--   [http://localhost:5005/kitchen/pause](http://192.168.1.198:5005/kitchen/pause)
+-   [http://localhost:5005/kitchen/nfc/say/Hello%20Frank/en-us/80](http://localhost:5005/kitchen/nfc/say/Hello%20Frank/en-us/80)
+-   [http://localhost:5005/kitchen/nfc/spotify:album:3NFNNMIWnByvVPvCf7LsRU](http://localhost:5005/kitchen/nfc/spotify:album:3NFNNMIWnByvVPvCf7LsRU)
+-   [http://localhost:5005/kitchen/pause](http://localhost:5005/kitchen/pause)
+-   [http://localhost:5005/kitchen/clip/sample_clip.mp3](http://localhost:5005/kitchen/clip/sample_clip.mp3)
+-   [http://localhost:5005/kitchen/volume/36](http://localhost:5005/kitchen/volume/36)
+-   [http://localhost:5005/Kitchen/playlist/test](http://localhost:5005/Kitchen/playlist/test) - This will play the Sonos playlist named 'test'. Substitute 'test' for your own playlist
 
 ### Stuff to Do
 * Upgrade the old NFC MFRC522 code

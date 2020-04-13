@@ -275,7 +275,7 @@ else:
 
         # Establish the types of tags we are looking for
         target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-        print(target)
+        # print(target)
 
         # If we don't find a card, wait
         if target is None:
