@@ -194,43 +194,48 @@ if we_write == "no":
 ######## This is the LOOP Write Section
 ######################################################################
 elif we_write == "loop":
-    import gspread
-    from oauth2client.service_account import ServiceAccountCredentials
-
     # Establish Reader on USB
     # See list of compatible readers at nfcpy.org
     clf = nfc.ContactlessFrontend('usb')
 
-    while continue_reading:
+    import gspread
+    from oauth2client.service_account import ServiceAccountCredentials
 
-        # Establish the types of tags we are looking for
-        target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-        print(target)
+    # use creds to create a client to interact with the Google Drive API
+    scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+    creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+    client = gspread.authorize(creds)
 
-        # use creds to create a client to interact with the Google Drive API
-        scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-        creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-        client = gspread.authorize(creds)
+    # Find a workbook by name and open the first sheet
+    # Make sure you use the right name here.
+    sheet = client.open("NFC Cards Database").sheet1
 
-        # Find a workbook by name and open the first sheet
-        # Make sure you use the righto name here.
-        sheet = client.open("Media Database Project Example (For John)").sheet1
+    list_of_sheet_records = sheet.get_all_records()
+    # print(list_of_sheet_records)
 
-        list_of_sheet_records = sheet.get_all_records()
-        #print(list_of_sheet_records)
 
-        # Add write_card def
-        def write_card(uri_to_write,artist_to_write,album_to_write,year_to_write):
+    # Add write_card def
+    def write_card(uri_to_write,artist_to_write,album_to_write,year_to_write):
+        continue_reading = True
+        # Pass variables from def input through
+        nfcData_to_write = uri_to_write
+        print("Artist: "+artist_to_write)
+        print("Album: "+album_to_write+" ("+str(year_to_write)+")")
+        print ("URI that will be written: %s" % nfcData_to_write)
 
-            # Pass variables from def input through
-            nfcData_to_write = uri_to_write
-            print("Artist: "+artist_to_write+"\n")
-            print("Album: "+album_to_write+" ("+str(year_to_write)+")"+"\n")
-            print ("URI that will be written: %s" % nfcData_to_write)
+        # TODO Ctrl+C doesn't work as expected
 
-            # TODO Ctrl+C doesn't work as expected
-
+        while continue_reading:
             input("Add NFC tag, then press Enter to continue...")
+
+            # Establish the types of tags we are looking for
+            target = clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
+            # print("Target is "+str(target))
+
+            # If we don't find a card, wait
+            # if target is None:
+            #     sleep(1)  # don't burn the CPU
+            #     continue
 
             if(not is_test):
                 # Establish tag
@@ -244,19 +249,23 @@ elif we_write == "loop":
                 print("URI Successfully Written")
                 #
 
-        # Loop to extract info from Google Sheet and then send to 'write card'
-        for record in list_of_sheet_records:
-            # Assign Google Sheet data to variable
-            uri_to_write=record['Spotify URI (Result)']
-            artist_to_write=record['Artist (Result)']
-            album_to_write=record['Album (Result)']
-            year_to_write=record['Year (Result)']
-            skip_or_print=record['Skip vs Print']
+                continue_reading = False
 
-            # Skip certain records and send info to def
-            if uri_to_write!='No Match':
-                if skip_or_print!='Skip':
-                    write_card(uri_to_write,artist_to_write,album_to_write,year_to_write)
+    # Loop to extract info from Google Sheet and then send to 'write card'
+    for record in list_of_sheet_records:
+        # Assign Google Sheet data to variable
+        uri_to_write=record['Spotify URI (Result)']
+        artist_to_write=record['Artist (Result)']
+        album_to_write=record['Album (Result)']
+        year_to_write=record['Year (Result)']
+        skip_or_print=record['Skip vs Print']
+
+        # Skip certain records and send info to def
+        if uri_to_write!='No Match':
+            if skip_or_print!='Skip':
+                write_card(uri_to_write,artist_to_write,album_to_write,year_to_write)
+
+
 
 
 ######################################################################
