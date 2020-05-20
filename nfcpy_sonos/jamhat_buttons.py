@@ -18,7 +18,8 @@ try:
                 jh.button_1.wait_for_release()
                 print('Next Button Pressed')
                 nfcData = 'next'
-                nfcpy_SonosController.playRoomLights(nfcData, 'off', 'blinkstick', 'success')
+                #TODO: turning on the lights with JamHat here doesn't work for some reason
+                nfcpy_SonosController.playRoomLights(nfcData, 'off', 'jamhat', 'success')
 
                 #Disabled sonos play with no light control
                 # nfcpy_SonosController.play(nfcData)

@@ -138,7 +138,7 @@ I'm not trying serial devices because you haven't told me
     
 ### Options
 Example
-`sudo python3 sonos-nfc-read.py -sonosURI [node-sonos-http-api endpoint] -sonosRoom [Room Name] -cardTimeout [seconds] -debounce [seconds]`
+`sudo python3 sonos-nfc-read.py -sonosURI [node-sonos-http-api endpoint] -sonosRoom [Room Name] -lightsOnOff on -cardTimeout [seconds] -debounce [seconds]`
 
 The program will wait until you represent a card that was written with the service before. It will take the URI and send it to the sonos controller that can run on the same machine or on a server if you you like to leverage a central endpoint for other actions as well.
 *  `cardTimeout` is an optional parameter for the number of seconds to wait when the same card is read multiple times in a row. default=0
@@ -147,6 +147,8 @@ The program will wait until you represent a card that was written with the servi
 * ``sonosURI`` - default is ``localhost:5005``. 
 * ``write`` - the default is ``no``, thus default mode is read mode. Type ``yes`` if you want to write individual cards, ``loop`` if you want to write multiple cards from google spreadsheet'. You can figure out what those do yourself
 	* ``uri`` optional parameter to use in addition to ``write``. This will use the uri you input and write it to the card
+* ``-lightsOnOff`` - the default is off. Type ``on`` to turn on the lights
+* ``-lightType`` - options are ``jamhat``, ``blinkstick`` and ``GPIO``
 * ``test`` - default is off. Use this to run all code except for NFC read or writes
 * ``quietTime`` - default is off. Type ``yes`` to enable quiet time from 9 PM to 7 AM. You can edit the times in the code. 
 	* ***This currently only works for the USB NFC reader*** 
@@ -206,7 +208,7 @@ su pi -c 'node /home/pi/SonosProject/node-sonos-http-api/server.js < /dev/null &
 # su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-read.py -sonosUri http://localhost:5005 -sonosRoom Kitchen > /home/pi/SonosProject/python-sonos-nfc/log.txt &'
 
 # Start NFCPy USB NFC Reader
-su pi -c 'python3 /home/pi/SonosProject/nfcpy_sonos/mysonos.py -sonosUri http://localhost:5005 -sonosRoom Kitchen &'
+su pi -c 'python3 /home/pi/SonosProject/nfcpy_sonos/mysonos.py -sonosUri http://localhost:5005 -sonosRoom Kitchen -lightsOnOff on &'
 
 # Start JamHat buttons
 su pi -c 'python3 /home/pi/SonosProject/nfcpy_sonos/jamhat_buttons.py &'

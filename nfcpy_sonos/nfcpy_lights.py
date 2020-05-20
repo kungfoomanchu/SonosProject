@@ -24,18 +24,20 @@ except:
 
 def lightsDef(lightsonoff, lighttype, response):
     # Sending Lights Signal
-    if lightsonoff == "on":
+    if lightsonoff != "off":
         print("lights on")
         # remove case sensitive
         lighttype = lighttype.casefold()
         response = response.casefold()
 
         if lighttype == "jamhat":
-            print("jamhat")
+            print("Jamhat Lights Initiated")
             return lightsJamHat(response)
         if lighttype == "blinkstick":
+            print("Blinkstick Lights Initiated")
             return lightsBlinkstick(response)
         if lighttype == "gpio":
+            print("GPIO Lights Initiated")
             return lightsGPIO(response)
         #TODO - if jamhat and blinkstick
     elif lightsonoff == "off":
@@ -83,11 +85,11 @@ def lightsJamHat(response):
                 x = x + 1
             jh.close()
         except:
-            print("There was a JamHat Error in nfcpy_SonosController")
+            print("There was a JamHat Error in nfcpy_SonosController.lightsJamHat")
             try:
-                lights("blinkstick","error")
+                lightsBlinkstick("error")
             except:
-                print('Blinkstick had some sort of error')
+                print('Blinkstick had some sort of error in nfcpy_SonosController.lightsJamHat')
 
     elif response == "error":
         try:
