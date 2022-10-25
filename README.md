@@ -138,7 +138,7 @@ I'm not trying serial devices because you haven't told me
     
 ### Options
 Example
-`sudo python3 sonos-nfc-read.py -sonosURI [node-sonos-http-api endpoint] -sonosRoom [Room Name] -lightsOnOff on -cardTimeout [seconds] -debounce [seconds]`
+`sudo python3 mysonos.py -sonosURI [node-sonos-http-api endpoint] -sonosRoom [Room Name] -lightsOnOff on -cardTimeout [seconds] -debounce [seconds]`
 
 The program will wait until you represent a card that was written with the service before. It will take the URI and send it to the sonos controller that can run on the same machine or on a server if you you like to leverage a central endpoint for other actions as well.
 *  `cardTimeout` is an optional parameter for the number of seconds to wait when the same card is read multiple times in a row. default=0
