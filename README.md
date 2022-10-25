@@ -217,7 +217,7 @@ su pi -c 'python3 /home/pi/SonosProject/nfcpy_sonos/jamhat_buttons.py &'
 su pi -c 'python3 /home/pi/SonosProject/nfcpy_sonos/bluetooth_media_button_mapping_to_sonos.py &'
 
 # Restart Each Night at 3 AM
-su pi -c 'shutdown -r 03:00'
+su pi -c 'shutdown -r 03:00 &'
 
 # Start Buttons for GPIO Breadboard
 # su pi -c 'python3 /home/pi/SonosProject/python-sonos-nfc/sonos-nfc-button1.py &'
